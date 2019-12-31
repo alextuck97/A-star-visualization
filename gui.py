@@ -35,8 +35,8 @@ class App:
         btn_place_end = tk.Button(button_frame, text="Place End",  width=20, command=self.placeEnd)
         btn_place_end.grid(row=3,columnspan=2, pady=10)
 
-        btn_place_barriers = tk.Button(button_frame, text="Place Barriers", width=20, command=self.placeBarriers)
-        btn_place_barriers.grid(row=4,columnspan=2,pady=10)
+        #btn_place_barriers = tk.Button(button_frame, text="Place Barriers", width=20, command=self.placeBarriers)
+        #btn_place_barriers.grid(row=4,columnspan=2,pady=10)
 
         heuristic_label = tk.Label(button_frame, text="Heuristic: ")
         options = ["City Block", "Euclidean"]
@@ -48,17 +48,17 @@ class App:
         #heuristic_combobox = ttk.Combobox(button_frame)
         #heuristic_combobox['values'] = ("City Block", "Euclidean")
         #heuristic_combobox.current(0)
-        heuristic_label.grid(row=5,column=0,pady=10)
-        heuristic_menu.grid(row=5,column=1,pady=10)
+        heuristic_label.grid(row=4,column=0,pady=10)
+        heuristic_menu.grid(row=4,column=1,pady=10)
 
         btn_clear = tk.Button(button_frame, text="Clear", width=20, command=self.clearPath)
-        btn_clear.grid(row=6,columnspan=2,pady=10)
+        btn_clear.grid(row=5,columnspan=2,pady=10)
 
         btn_clear_all = tk.Button(button_frame, text="Clear All", width=20,command=self.clearGraph)
-        btn_clear_all.grid(row=7,columnspan=2,pady=10)
+        btn_clear_all.grid(row=6,columnspan=2,pady=10)
 
         btn_go = tk.Button(button_frame, text="Go!", width=20, command=lambda: self.go(heuristic_menu.getvar))
-        btn_go.grid(row=8, columnspan=2,pady=10)
+        btn_go.grid(row=7, columnspan=2,pady=10)
 
         button_frame.grid(row=0,column=0, padx=2)
 
