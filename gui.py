@@ -40,9 +40,9 @@ class App:
 
         heuristic_label = tk.Label(button_frame, text="Heuristic: ")
         options = ["City Block", "Euclidean"]
-        variable = tk.StringVar(button_frame)
-        variable.set(options[0])
-        heuristic_menu = tk.OptionMenu(button_frame, variable, *options)
+        heuristic_var = tk.StringVar(button_frame)
+        heuristic_var.set(options[0])
+        heuristic_menu = tk.OptionMenu(button_frame, heuristic_var, *options)
         self.parameters["Heuristic"]=heuristic_menu
         heuristic_menu.config(width=8)
         #heuristic_combobox = ttk.Combobox(button_frame)
@@ -51,14 +51,24 @@ class App:
         heuristic_label.grid(row=4,column=0,pady=10)
         heuristic_menu.grid(row=4,column=1,pady=10)
 
+        speed_label = tk.Label(button_frame, text="Speed: ")
+        speed_options = ["Slow", "Medium", "Fast", "Very Fast"]
+        speed_var = tk.StringVar(button_frame)
+        speed_var.set(speed_options[1])
+        speed_menu = tk.OptionMenu(button_frame, speed_var, *speed_options)
+        self.parameters["Speed"]=speed_menu
+        speed_menu.config(width=8)
+        speed_label.grid(row=5,column=0,pady=10)
+        speed_menu.grid(row=5,column=1,pady=10)
+
         btn_clear = tk.Button(button_frame, text="Clear", width=20, command=self.clearPath)
-        btn_clear.grid(row=5,columnspan=2,pady=10)
+        btn_clear.grid(row=6,columnspan=2,pady=10)
 
         btn_clear_all = tk.Button(button_frame, text="Clear All", width=20,command=self.clearGraph)
-        btn_clear_all.grid(row=6,columnspan=2,pady=10)
+        btn_clear_all.grid(row=7,columnspan=2,pady=10)
 
-        btn_go = tk.Button(button_frame, text="Go!", width=20, command=lambda: self.go(heuristic_menu.getvar))
-        btn_go.grid(row=7, columnspan=2,pady=10)
+        btn_go = tk.Button(button_frame, text="Go!", width=20, command=lambda: self.go(heuristic_var.get(), speed_var.get()))
+        btn_go.grid(row=8, columnspan=2,pady=10)
 
         button_frame.grid(row=0,column=0, padx=2)
 
@@ -160,9 +170,13 @@ class App:
                     self.graph_buttons[i][j].configure(bg="tan") 
 
 
-    def go(self, heuristic):
+    def go(self, heuristic, speed):
         
-        
+        speeds = {"Slow":0.3, "Medium":0.2, "Fast": 0.1, "Very Fast": 0.05}
+        s = speeds[speed]
+
+        self.disableButtons()
+
         if heuristic == "Euclidean":
             h = EuclideanHeuristic
         else:
@@ -176,10 +190,10 @@ class App:
 
         while n == None:
             n = self.a_star.iterateSearch(self.graph.end)
+            #s.enter(0.2, 1, self.colorExploredSet, (self.a_star.explored_set,))
+            #s.run()
+            sleep(s)
             self.colorExploredSet(self.a_star.explored_set)
-            self.master.update_idletasks()
-            sleep(0.2)
-            
 
         if n == TERMINATE:
             pass
@@ -187,14 +201,18 @@ class App:
             self.colorPath(n, self.graph.start, self.graph.end)
         self.a_star.clearSearch()
 
+        self.enableButtons()
+
 
     def colorExploredSet(self, explored_set):
 
-        for n in explored_set:
-            x = n.position[0]
-            y = n.position[1]
-
-            self.graph_buttons[x][y].configure(bg="blue")
+        #for n in explored_set:
+        x = explored_set[-1].position[0]
+        y = explored_set[-1].position[1]
+        #self.graph_buttons[x][y].after(1000, lambda: self.graph_buttons[x][y].configure(bg="blue"))
+        self.graph_buttons[x][y].configure(bg="blue")
+        self.master.update()
+        
 
 
     def colorPath(self, node, start, end):

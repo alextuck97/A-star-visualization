@@ -83,6 +83,10 @@ class Graph:
 
 
     def resizeMatrix(self, size):
+        '''
+        Make matrix size x size.
+        Set  Start to (0,0), Set end to (size-1,size-1).
+        '''
         if size > MAX_SIZE:
             return
 

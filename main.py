@@ -5,6 +5,7 @@ from gui import App
 
 if __name__ == "__main__":
     #g = Graph()
+    #g.resizeMatrix(20)
     #g.toggleBarrier((0,4))
     #g.toggleBarrier((1,3))
     #a_star = AStarSearch()
