@@ -1,13 +1,7 @@
-from enum import Enum
+from spaces import Spaces
 
+MIN_SIZE = 2
 MAX_SIZE = 40
-
-class Spaces(Enum):
-    EMPTY = 0
-    START = 1
-    END = 2
-    BARRIER = 3
-
 
 class Graph:
     def __init__(self, size=5, start=(0,0), end=(4,4)):
@@ -101,8 +95,4 @@ class Graph:
 
     
     def resetMatrix(self):
-        self.resizeMatrix(self.size)
-
-    
-
-    
+        self.resizeMatrix(self.size)    
