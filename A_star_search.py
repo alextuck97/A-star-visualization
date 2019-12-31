@@ -52,18 +52,18 @@ class AStarSearch:
             return q
         
         for p in self.getNeighbors(q):
-            try:
+        
+            if p[0] < len(self.graph) and p[0] >= 0 and p[1] < len(self.graph) and p[1] >= 0:
                 if self.graph[p[0]][p[1]] != Spaces.BARRIER:
                     h = self.heuristic(p, end)
                     g = q.g + 1
                     successor = Node(g + h, g, p, q)
 
-                    # Make sure there isn't a better path to the current position already in the pipe
-                    # and that there isn't already a better known way to get there
+                # Make sure there isn't a better path to the current position already in the pipe
+                # and that there isn't already a better known way to get there
                     if not self.isBetterNodeInFrontier(successor) and not self.isBetterNodeInExploredSet(successor):
                         heapq.heappush(self.frontier, successor)
-            except IndexError:
-                pass
+            
         
         self.explored_set.append(q)
 

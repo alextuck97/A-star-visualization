@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as messagebox
 from A_star_search import *
 from graph import *
+from time import sleep
 
 class App:
     def __init__(self):
@@ -50,11 +51,14 @@ class App:
         heuristic_label.grid(row=5,column=0,pady=10)
         heuristic_menu.grid(row=5,column=1,pady=10)
 
-        btn_clear = tk.Button(button_frame, text="Clear", width=20, command=self.clearGraph)
+        btn_clear = tk.Button(button_frame, text="Clear", width=20, command=self.clearPath)
         btn_clear.grid(row=6,columnspan=2,pady=10)
 
-        btn_go = tk.Button(button_frame, text="Go!", width=20, command=self.go)
-        btn_go.grid(row=7, columnspan=2,pady=10)
+        btn_clear_all = tk.Button(button_frame, text="Clear All", width=20,command=self.clearGraph)
+        btn_clear_all.grid(row=7,columnspan=2,pady=10)
+
+        btn_go = tk.Button(button_frame, text="Go!", width=20, command=lambda: self.go(heuristic_menu.getvar))
+        btn_go.grid(row=8, columnspan=2,pady=10)
 
         button_frame.grid(row=0,column=0, padx=2)
 
@@ -71,11 +75,46 @@ class App:
     
 
     def placeStart(self):
-        pass
+        self.disableButtons()
+
+        size = self.graph.size
+
+        for i in range(size):
+            for j in range(size):
+                self.graph_buttons[i][j].configure(command = partial(self.colorButtonEndOrStart, (i,j), Spaces.START))
+            
 
 
     def placeEnd(self):
-        pass
+        self.disableButtons()
+
+        size = self.graph.size
+
+        for i in range(size):
+            for j in range(size):
+                self.graph_buttons[i][j].configure(command = partial(self.colorButtonEndOrStart, (i,j), Spaces.END))
+
+        
+    def colorButtonEndOrStart(self, position, endorstart):
+        result = self.graph.setEndPoint(position, endorstart)
+
+        if result == 1:
+            
+            if endorstart == Spaces.END:
+                self.graph_buttons[position[0]][position[1]].configure(bg="red")
+            elif endorstart == Spaces.START:
+                self.graph_buttons[position[0]][position[1]].configure(bg="green")
+            self.enableBarrierToggles()
+            self.enableButtons()
+            
+
+    def enableButtons(self):
+        for c in self.master.winfo_children()[0].winfo_children():
+                c.configure(state="normal")
+    
+    def disableButtons(self):
+        for c in self.master.winfo_children()[0].winfo_children():
+                c.configure(state="disable")
 
 
     def placeBarriers(self):
@@ -107,9 +146,66 @@ class App:
                     self.graph_buttons[i][j].configure(bg="tan")
 
 
-    def go(self):
-        pass
+    def clearPath(self):
+        size = self.graph.size
+        for i in range(size):
+            for j in range(size):
+                if self.graph.getPosition(i,j) == Spaces.START:
+                    self.graph_buttons[i][j].configure(bg="green")
+                elif self.graph.getPosition(i,j) == Spaces.END:
+                    self.graph_buttons[i][j].configure(bg="red")
+                elif self.graph.getPosition(i,j) == Spaces.BARRIER:
+                    self.graph_buttons[i][j].configure(bg="gray")
+                else:
+                    self.graph_buttons[i][j].configure(bg="tan") 
 
+
+    def go(self, heuristic):
+        
+        
+        if heuristic == "Euclidean":
+            h = EuclideanHeuristic
+        else:
+            h = CityBlockHeuristic
+        self.a_star.setGraph(self.graph.matrix)
+        self.a_star.setHeuristic(h)
+
+        self.a_star.startSearch(self.graph.start, self.graph.end)
+
+        n = None
+
+        while n == None:
+            n = self.a_star.iterateSearch(self.graph.end)
+            self.colorExploredSet(self.a_star.explored_set)
+            self.master.update_idletasks()
+            sleep(0.2)
+            
+
+        if n == TERMINATE:
+            pass
+        else:
+            self.colorPath(n, self.graph.start, self.graph.end)
+        self.a_star.clearSearch()
+
+
+    def colorExploredSet(self, explored_set):
+
+        for n in explored_set:
+            x = n.position[0]
+            y = n.position[1]
+
+            self.graph_buttons[x][y].configure(bg="blue")
+
+
+    def colorPath(self, node, start, end):
+        while node != None:
+            x = node.position[0]
+            y = node.position[1]
+            self.graph_buttons[x][y].configure(bg="orange")
+            node = node.parent
+        
+        self.graph_buttons[start[0]][start[1]].configure(bg="green")
+        self.graph_buttons[end[0]][end[1]].configure(bg="red")
 
     def resize(self, new_size):
         if new_size > MAX_SIZE or new_size < MIN_SIZE:
@@ -147,6 +243,20 @@ class App:
                 buttons[i].append(square_button)
         
         return buttons
+    
+
+    def enableBarrierToggles(self):
+        size = self.graph.size
+        for i in range(size):
+            for j in range(size):
+                if self.graph.getPosition(i,j) == Spaces.START:
+                    self.graph_buttons[i][j].configure(bg="green")
+                elif self.graph.getPosition(i,j) == Spaces.END:
+                    self.graph_buttons[i][j].configure(bg="red")
+                elif self.graph.getPosition(i,j) == Spaces.BARRIER:
+                    self.graph_buttons[i][j].configure(bg="gray", command=partial(self.toggleBarrier, (i,j)))
+                else:
+                    self.graph_buttons[i][j].configure(bg="tan", command=partial(self.toggleBarrier, (i,j)))
         
 
 
