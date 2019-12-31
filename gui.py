@@ -12,7 +12,8 @@ class App:
         self.graph = Graph()
 
         self.parameters = {}
-       
+        self.clear_buttons = []
+
         self.master = tk.Tk()
         self.master.title("A* visualization")
         #self.master.geometry("400x200")
@@ -63,9 +64,11 @@ class App:
 
         btn_clear = tk.Button(button_frame, text="Clear", width=20, command=self.clearPath)
         btn_clear.grid(row=6,columnspan=2,pady=10)
+        self.clear_buttons.append(btn_clear)
 
         btn_clear_all = tk.Button(button_frame, text="Clear All", width=20,command=self.clearGraph)
         btn_clear_all.grid(row=7,columnspan=2,pady=10)
+        self.clear_buttons.append(btn_clear_all)
 
         btn_go = tk.Button(button_frame, text="Go!", width=20, command=lambda: self.go(heuristic_var.get(), speed_var.get()))
         btn_go.grid(row=8, columnspan=2,pady=10)
@@ -118,6 +121,10 @@ class App:
             self.enableButtons()
             
 
+    def enableClearButtons(self):
+        for c in self.clear_buttons:
+            c.configure(state="normal")
+
     def enableButtons(self):
         for c in self.master.winfo_children()[0].winfo_children():
                 c.configure(state="normal")
@@ -143,6 +150,7 @@ class App:
 
 
     def clearGraph(self):
+        self.enableButtons()
         self.graph.resetMatrix()
         size = self.graph.size
 
@@ -157,6 +165,7 @@ class App:
 
 
     def clearPath(self):
+        self.enableButtons()
         size = self.graph.size
         for i in range(size):
             for j in range(size):
@@ -201,7 +210,7 @@ class App:
             self.colorPath(n, self.graph.start, self.graph.end)
         self.a_star.clearSearch()
 
-        self.enableButtons()
+        self.enableClearButtons()
 
 
     def colorExploredSet(self, explored_set):
